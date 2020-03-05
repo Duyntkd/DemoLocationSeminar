@@ -535,6 +535,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
         @Override
         public void onMapClick(LatLng latLng) {
+
             Toast.makeText(getBaseContext(), "Position: " + latLng.longitude, Toast.LENGTH_SHORT).show();
 
         }
@@ -543,6 +544,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
     }
 
     public void clickToFind(View view) {
+        map.clear();
         EditText txtFind = (EditText) findViewById(R.id.edtLocation);
         String strLocation = txtFind.getText().toString();
         if (!activateSearchInRadius) {
