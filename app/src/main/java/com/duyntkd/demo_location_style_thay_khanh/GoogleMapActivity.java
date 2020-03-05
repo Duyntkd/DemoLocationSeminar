@@ -126,7 +126,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -151,7 +150,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPos));
 
                 map.addMarker(new MarkerOptions().position(HOME).title("Home").snippet("HCM City"));
-
                 break;
             case R.id.menu_showcurrentlocation:
                 currentLocation = map.getMyLocation();
@@ -160,7 +158,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 CameraPosition myPosition = new CameraPosition.Builder().target(currentPos).zoom(17).bearing(90).tilt(30).build();
                 map.animateCamera(CameraUpdateFactory.newCameraPosition(myPosition));
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -196,21 +193,17 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                     strStatus = "temporarily unvailable";
                     break;
             }
-
             Toast.makeText(getBaseContext(), provider + " " + strStatus, Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void onProviderEnabled(String provider) {
             Toast.makeText(getBaseContext(), "Disabled provider " + provider, Toast.LENGTH_SHORT).show();
-
         }
 
         @Override
         public void onProviderDisabled(String provider) {
-
             Toast.makeText(getBaseContext(), "Enabled provider " + provider, Toast.LENGTH_SHORT).show();
-
         }
     }
 
@@ -220,7 +213,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         super.onResume();
         if (status != 0) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
         }
     }
