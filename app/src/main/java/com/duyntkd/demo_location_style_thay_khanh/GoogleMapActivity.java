@@ -93,36 +93,20 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
         switch (state) {
             case 0:
-                map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                title = "Normal - Change to Hybrid";
+                title = "Hybrid - Change to Normal";
+                btnStyle.setText(title);
+                map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
                 state = 1;
                 break;
 
             case 1:
-                map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-                title = "Hybrid - Change to Normal";
-                state = 2;
-                break;
-
-            case 2:
-                map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-                title = "Statellite - Change to None";
-                state = 4;
-                break;
-
-            case 3:
-                map.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-                title = "Terran - Change to None";
-                state = 4;
-                break;
-
-            case 4:
-                map.setMapType(GoogleMap.MAP_TYPE_NONE);
-                title = "None - Change to Normal";
-                state = 1;
+                title = "Normal - Change to Hybrid";
+                btnStyle.setText(title);
+                map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                state = 0;
                 break;
         }
-        btnStyle.setText(title);
+
     }
 
     @SuppressLint("MissingPermission")
@@ -223,7 +207,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPos));
 
                 map.addMarker(new MarkerOptions().position(HOME).title("Home").snippet("HCM City"));
-                map.addMarker(new MarkerOptions().position(SAIGON_OPERA_HOUSE).title("Opera house"));
+
                 break;
             case R.id.menu_showcurrentlocation:
                 currentLocation = map.getMyLocation();
@@ -234,10 +218,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 break;
 
             case R.id.menu_connecttwopoints:
-                //map.addMarker(new MarkerOptions().position(SAIGON_OPERA_HOUSE).title("Saigon opera house").snippet("HCM City").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-
-                //map.addPolyline(new PolylineOptions().add(BEN_THANH_MARKET, SAIGON_OPERA_HOUSE).width(5).color(Color.RED));
-
                 //TODO request get direction code below
                 if (listPoints.size() == 2) {
                     //Create URL to get request from first marker to second marker
