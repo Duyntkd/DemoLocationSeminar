@@ -83,6 +83,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         btnStyle = (Button) findViewById(R.id.btnStyle);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        locationListener = new MyLocationListener();
 
 
     }
@@ -93,18 +94,25 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
         switch (state) {
             case 0:
-                title = "Hybrid - Change to Normal";
+                title = "Satelite - Change to Normal";
                 btnStyle.setText(title);
-                map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+                map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
                 state = 1;
                 break;
 
             case 1:
-                title = "Normal - Change to Hybrid";
+                title = "Normal - Change to TERRAIN";
                 btnStyle.setText(title);
                 map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                state = 2;
+                break;
+            case 2:
+                title = "TERRAIN - Change to Satelite";
+                btnStyle.setText(title);
+                map.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
                 state = 0;
                 break;
+
         }
 
     }
@@ -134,13 +142,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
             if (currentLocation != null) {
                 LatLng currentPos = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-                Log.d("aaa", "bbb");
-//                Marker currentMarker = map.addMarker(new MarkerOptions()
-//                        .position(currentPos)
-//                        .title("My position")
-//                        .snippet("Mobile Programming")
-//                        .icon(BitmapDescriptorFactory
-//                                .fromResource(R.drawable.ic_launcher_foreground)));
 
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPos, 15));
                 map.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
@@ -216,251 +217,11 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 CameraPosition myPosition = new CameraPosition.Builder().target(currentPos).zoom(17).bearing(90).tilt(30).build();
                 map.animateCamera(CameraUpdateFactory.newCameraPosition(myPosition));
                 break;
-
-            case R.id.menu_connecttwopoints:
-                //TODO request get direction code below
-                if (listPoints.size() == 2) {
-                    //Create URL to get request from first marker to second marker
-                    String url = getRequestUrl(listPoints.get(0), listPoints.get(1));
-                    TaskRequestDirection taskRequestDirection = new TaskRequestDirection();
-                    taskRequestDirection.execute(url);
-
-                }
-
-            case R.id.menu_getlocationdata:
-                //locationListener = new MyLocationListener();
-                //status = 1;
-                break;
-            case R.id.menu_getlocationontouch:
-                //map.setOnMapClickListener(new MyOnMapClickListener());
-                break;
-
-            case R.id.menu_activateSearchInRadius:
-                activateSearchInRadius = !activateSearchInRadius;
-                break;
-
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private String getRequestUrl(LatLng origin, LatLng dest) {
-        //Value of origin
-        String str_org = "origin=" + origin.latitude + "," + origin.longitude;
-        //Value of dest
-        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
-        //Set value enable the sensor
-        String sensor = "sensor=false";
-        //Mode for find location
-        String mode = "mode=walking";
-        //Build the full param
-        String param = str_org + "&" + str_dest + "&" + sensor + "&" + mode;
-        //Output format
-        String output = "json";
-        //Create url to request
-        String url = "https://maps.googleapis.com/maps/api/directions/json?" + param + "&key=" + getString(R.string.map_key);
-        return url;
-
-    }
-
-    private String requestDirection(String reqUrl) {
-        String responseString = "";
-        InputStream inputStream = null;
-        HttpURLConnection httpURLConnection = null;
-
-        try {
-            URL url = new URL(reqUrl);
-            httpURLConnection = (HttpURLConnection) url.openConnection();
-            httpURLConnection.connect();
-
-            //Get response result
-            inputStream = httpURLConnection.getInputStream();
-            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-
-            StringBuffer stringBuffer = new StringBuffer();
-            String line = "";
-            while ((line = bufferedReader.readLine()) != null) {
-                stringBuffer.append(line);
-            }
-
-            responseString = stringBuffer.toString();
-            bufferedReader.close();
-            inputStreamReader.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-                httpURLConnection.disconnect();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        }
-
-        return responseString;
-    }
-
-    private String requestLocation(String reqUrl) {
-        String responseString = "";
-        InputStream inputStream = null;
-        HttpURLConnection httpURLConnection = null;
-
-        try {
-            URL url = new URL(reqUrl);
-            httpURLConnection = (HttpURLConnection) url.openConnection();
-            httpURLConnection.connect();
-
-            //Get response result
-            inputStream = httpURLConnection.getInputStream();
-            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-
-            StringBuffer stringBuffer = new StringBuffer();
-            String line = "";
-            while ((line = bufferedReader.readLine()) != null) {
-                stringBuffer.append(line);
-            }
-
-            responseString = stringBuffer.toString();
-            bufferedReader.close();
-            inputStreamReader.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-                httpURLConnection.disconnect();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        }
-
-        return responseString;
-    }
-
-    public class TaskRequestDirection extends AsyncTask<String, Void, String> {
-
-
-        @Override
-        protected String doInBackground(String... strings) {
-            String responseString = "";
-            try {
-                responseString = requestDirection(strings[0]);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return responseString;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            //Parse Json here
-            try {
-                JSONObject jsonObject = new JSONObject(s);
-                JSONArray jsonArray = jsonObject.getJSONArray("routes")
-                        .getJSONObject(0).getJSONArray("legs")
-                        .getJSONObject(0).getJSONArray("steps");
-
-                int count = jsonArray.length();
-                String[] polyline_array = new String[count];
-
-                JSONObject jsonObject2;
-
-                for (int i = 0; i < count; i++) {
-                    jsonObject2 = jsonArray.getJSONObject(i);
-
-                    String polygone = jsonObject2.getJSONObject("polyline").getString("points");
-
-                    polyline_array[i] = polygone;
-                }
-
-                int count2 = polyline_array.length;
-
-                for (int i = 0; i < count2; i++) {
-                    PolylineOptions options2 = new PolylineOptions();
-                    options2.color(Color.BLUE);
-                    options2.width(10);
-                    options2.addAll(PolyUtil.decode(polyline_array[i]));
-
-                    map.addPolyline(options2);
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        }
-    }
-
-    public class TaskRequestLocation extends AsyncTask<String, Void, String> {
-
-
-        @Override
-        protected String doInBackground(String... strings) {
-            String responseString = "";
-            try {
-                responseString = requestDirection(strings[0]);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return responseString;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            //Parse Json here
-            try {
-                JSONObject jsonObject = new JSONObject(s);
-                JSONArray jsonArray = jsonObject.getJSONArray("results");
-                //.getJSONObject(0).getJSONArray("legs")
-                //.getJSONObject(0).getJSONArray("steps");
-
-                int count = jsonArray.length();
-                LatLng[] location_array = new LatLng[count];
-
-                JSONObject jsonObject2;
-
-                for (int i = 0; i < count; i++) {
-                    jsonObject2 = jsonArray.getJSONObject(i);
-
-                    double lat = Double.parseDouble(jsonArray.getJSONObject(i).getJSONObject("geometry")
-                            .getJSONObject("location").getString("lat"));
-
-                    double lng = Double.parseDouble(jsonArray.getJSONObject(i).getJSONObject("geometry")
-                            .getJSONObject("location").getString("lng"));
-
-                    LatLng latLng = new LatLng(lat, lng);
-
-                    location_array[i] = latLng;
-                }
-
-                int count2 = location_array.length;
-
-                for (int i = 0; i < count2; i++) {
-
-                    map.addMarker(new MarkerOptions().position(location_array[i]).title("Search result").snippet("HCM City"));
-
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        }
-    }
 
     @SuppressLint("MissingPermission")
     @Override
@@ -531,88 +292,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         }
     }
 
-    private class MyOnMapClickListener implements GoogleMap.OnMapClickListener {
-
-        @Override
-        public void onMapClick(LatLng latLng) {
-
-            Toast.makeText(getBaseContext(), "Position: " + latLng.longitude, Toast.LENGTH_SHORT).show();
-
-        }
 
 
-    }
 
-    public void clickToFind(View view) {
-        map.clear();
-        EditText txtFind = (EditText) findViewById(R.id.edtLocation);
-        String strLocation = txtFind.getText().toString();
-        if (!activateSearchInRadius) {
-            if (strLocation != null && !strLocation.trim().equals("")) {
-                new GeocoderTask().execute(strLocation);
-            }
-        } else {
-            EditText edtRadius = (EditText) findViewById(R.id.edtRadius);
-            String radiusString = edtRadius.getText().toString();
-
-            String baseApiUrl = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?";
-            String query = "keyword=" + strLocation;
-            String key = "&key=" + getString(R.string.map_key);
-            String location = "&location=" + HOME.latitude + "," + HOME.longitude;
-            String radius = "&radius=" + radiusString;
-
-            String completeRequestUrl = baseApiUrl + query + location + radius + key;
-
-            TaskRequestLocation taskRequestLocation = new TaskRequestLocation();
-            taskRequestLocation.execute(completeRequestUrl);
-
-
-        }
-    }
-
-    private class GeocoderTask extends AsyncTask<String, Void, List<Address>> {
-
-        @Override
-        protected List<Address> doInBackground(String... locationName) {
-            Geocoder geo = new Geocoder(getBaseContext());
-            List<Address> address = null;
-            try {
-                address = geo.getFromLocationName(locationName[0], 3);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return address;
-        }
-
-        @Override
-        protected void onPostExecute(List<Address> result) {
-            super.onPostExecute(result);
-
-            if (result == null || result.size() == 0) {
-                Toast.makeText(getBaseContext(), "Not found", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            map.clear();
-            for (int i = 0; i < result.size(); i++) {
-                Address address = (Address) result.get(i);
-
-                LatLng findPos = new LatLng(address.getLatitude(), address.getLongitude());
-                String addressText = String.format("%s %s", address.getMaxAddressLineIndex() > 0 ? address.getAddressLine(0) : "", address.getCountryName());
-                MarkerOptions mo = new MarkerOptions();
-                mo.position(findPos);
-                mo.title(addressText);
-
-                map.addMarker(mo);
-
-
-                if (i == 0) {
-                    map.animateCamera(CameraUpdateFactory.newLatLng(findPos));
-                }
-
-            }
-        }
-
-
-    }
 }

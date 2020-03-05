@@ -15,38 +15,6 @@
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/edtLocation"
-            android:ems="10"
-            android:layout_weight="1">
-            <requestFocus/>
-        </EditText>
-
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/edtRadius"
-            android:ems="10"
-            android:hint="Enter radius"
-            android:layout_weight="1">
-            <requestFocus/>
-        </EditText>
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Find"
-            android:onClick="clickToFind"
-            android:id="@+id/btnFind"/>
-    </LinearLayout>
-
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
