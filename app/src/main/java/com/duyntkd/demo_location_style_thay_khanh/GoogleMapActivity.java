@@ -553,8 +553,8 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
             EditText edtRadius = (EditText) findViewById(R.id.edtRadius);
             String radiusString = edtRadius.getText().toString();
 
-            String baseApiUrl = "https://maps.googleapis.com/maps/api/place/textsearch/json?";
-            String query = "query=" + strLocation;
+            String baseApiUrl = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?";
+            String query = "keyword=" + strLocation;
             String key = "&key=" + getString(R.string.map_key);
             String location = "&location=" + HOME.latitude + "," + HOME.longitude;
             String radius = "&radius=" + radiusString;
