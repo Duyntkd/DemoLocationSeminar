@@ -94,27 +94,36 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
         switch (state) {
             case 0:
-                title = "Satelite - Change to Normal";
+                title = "SATELLITE - Change to Normal";
                 btnStyle.setText(title);
                 map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
                 state = 1;
                 break;
-
             case 1:
-                title = "Normal - Change to TERRAIN";
+                title = "HYBRID - Change to None";
                 btnStyle.setText(title);
-                map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
                 state = 2;
                 break;
             case 2:
                 title = "TERRAIN - Change to Satelite";
                 btnStyle.setText(title);
                 map.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+                state = 3;
+                break;
+            case 3:
+                title = "NONE - Change to SATELLITE";
+                btnStyle.setText(title);
+                map.setMapType(GoogleMap.MAP_TYPE_NONE);
+                state = 4;
+                break;
+            case 4:
+                title = "NORMAL - Change to TERRAIN";
+                btnStyle.setText(title);
+                map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 state = 0;
                 break;
-
         }
-
     }
 
     @SuppressLint("MissingPermission")
