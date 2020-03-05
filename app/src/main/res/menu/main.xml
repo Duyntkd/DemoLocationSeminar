@@ -32,31 +32,5 @@
         android:title="Show current location"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/menu_connecttwopoints"
-        android:orderInCategory="100"
-        android:title="Line connect two point"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/menu_getlocationdata"
-        android:orderInCategory="100"
-        android:title="Get location data"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/menu_getlocationontouch"
-        android:orderInCategory="100"
-        android:title="Activate the map click"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/menu_activateSearchInRadius"
-        android:orderInCategory="100"
-        android:title="Activate search in radious from home"
-        app:showAsAction="never" />
-
-
-
 
 </menu>
