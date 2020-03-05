@@ -84,8 +84,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         locationListener = new MyLocationListener();
-
-
     }
 
 
@@ -99,7 +97,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
                 state = 1;
                 break;
-
             case 1:
                 title = "Normal - Change to TERRAIN";
                 btnStyle.setText(title);
@@ -112,7 +109,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 map.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
                 state = 0;
                 break;
-
         }
 
     }
@@ -175,8 +171,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
                     }
                     map.addMarker(markerOptions);
-
-
                 }
             });
         }
@@ -229,7 +223,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         super.onResume();
         if (status != 0) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
         }
     }
@@ -274,25 +267,17 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                     strStatus = "temporarily unvailable";
                     break;
             }
-
             Toast.makeText(getBaseContext(), provider + " " + strStatus, Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void onProviderEnabled(String provider) {
             Toast.makeText(getBaseContext(), "Disabled provider " + provider, Toast.LENGTH_SHORT).show();
-
         }
 
         @Override
         public void onProviderDisabled(String provider) {
-
             Toast.makeText(getBaseContext(), "Enabled provider " + provider, Toast.LENGTH_SHORT).show();
-
         }
     }
-
-
-
-
 }

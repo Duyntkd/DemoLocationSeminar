@@ -18,7 +18,6 @@ public class SmsReceiver extends BroadcastReceiver {
 
     private class MyLocationListener implements LocationListener {
 
-
         @Override
         public void onLocationChanged(Location location) {
             if (location != null) {
@@ -71,8 +70,6 @@ public class SmsReceiver extends BroadcastReceiver {
                 manager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60000, 1000, listener);
                 this.abortBroadcast();
             }
-
-
         }
 
     }

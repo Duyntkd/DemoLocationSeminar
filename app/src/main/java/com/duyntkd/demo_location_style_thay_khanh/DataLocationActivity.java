@@ -25,8 +25,8 @@ public class DataLocationActivity extends AppCompatActivity implements LocationL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_data_location);
 
-        txtLat = (TextView)findViewById(R.id.edtLat);
-        txtLong = (TextView)findViewById(R.id.edtLong);
+        txtLat = (TextView) findViewById(R.id.edtLat);
+        txtLong = (TextView) findViewById(R.id.edtLong);
 
         manager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
@@ -64,8 +64,6 @@ public class DataLocationActivity extends AppCompatActivity implements LocationL
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
-
-
     }
 
     @Override
