@@ -58,30 +58,18 @@ public class SmsReceiver extends BroadcastReceiver {
                 //---use the LocationManager class to obtain locations data---
                 lm = (LocationManager)
                         context.getSystemService(Context.LOCATION_SERVICE);
-                List<String> pr = lm.getProviders(true);
+
                 //---request location updates---
                 locationListener = new MyLocationListener();
-                SmsManager sms = SmsManager.getDefault();
 
                 try {
-                    Location loc = null;
-                    for (int i = 0; i < pr.size(); i++) {
-                        loc = lm.getLastKnownLocation(pr.get(i));
-                        if (loc != null) {
-                            break;
-                        }
-                    }
-                    sms.sendTextMessage(senderTel, null,
-
-                            "http://maps.google.com/maps?q=" + loc.getLatitude() + "," + loc.getLongitude(), null, null);
-
-                    lm.requestLocationUpdates(
-                            LocationManager.NETWORK_PROVIDER,
+                   lm.requestLocationUpdates(
+                            LocationManager.GPS_PROVIDER,
                             60000,
-                            1000,
+                            0,
                             locationListener);
                 } catch (SecurityException e) {
-                    Log.println(Log.ERROR, "AAAAAAAAAAAAAAAAAAAA", "AAAAAAAAAAAAAAAAAAAAAAAAAA");
+
                 }
 //---abort the broadcast; SMS messages won’t be broadcasted---
                 this.abortBroadcast();
@@ -100,7 +88,7 @@ public class SmsReceiver extends BroadcastReceiver {
                         "http://maps.google.com/maps?q=" + loc.getLatitude() + "," +
                                 loc.getLongitude(), null, null);
                 //---stop listening for location changes---
-                lm.removeUpdates(locationListener);
+//                lm.removeUpdates(locationListener);
             }
         }
 
