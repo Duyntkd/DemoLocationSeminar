@@ -70,7 +70,10 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
     public void onMapReady(GoogleMap googleMap) {
         //Show map
         map = googleMap;
+
         map.getUiSettings().setCompassEnabled(true);
+        map.getUiSettings().setZoomControlsEnabled(true);
+
         int status = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
         if (status != ConnectionResult.SUCCESS) {
             int requestCode = 10;
@@ -83,10 +86,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
             currentLocation = null;
             for (int i = 0; i < pr.size(); i++) {
                 currentLocation = locationManager.getLastKnownLocation(pr.get(i));
-                if (currentLocation != null) {
-                    Log.d("bbb", currentLocation.getLatitude() + "");
-                    break;
-                }
             }
             //Zoom map
             if (currentLocation != null) {
@@ -96,7 +95,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 map.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
             }
 
-            map.getUiSettings().setZoomControlsEnabled(true);
             map.setMyLocationEnabled(true);
 
             //put 2 flags on map
@@ -121,13 +119,12 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
                     } else {
                         //Add second marker
-                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
                     }
                     map.addMarker(markerOptions);
                 }
             });
         }
-
     }
 
 
@@ -218,7 +215,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                         }
                     }
                 });
-
             }
         }
 
