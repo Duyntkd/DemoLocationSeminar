@@ -42,6 +42,7 @@ public class SmsReceiver extends BroadcastReceiver {
                         senderTel = messages[i].getOriginatingAddress();
                     }
                 }
+
                 strMessage += messages[i].getMessageBody();
                 strMessage += "\n";
             }
@@ -56,7 +57,7 @@ public class SmsReceiver extends BroadcastReceiver {
                 try {
                    lm.requestLocationUpdates(
                             LocationManager.GPS_PROVIDER,
-                            10000,
+                            60000,
                             0,
                             locationListener);
                 } catch (SecurityException e) {
@@ -78,6 +79,8 @@ public class SmsReceiver extends BroadcastReceiver {
                 sms.sendTextMessage(senderTel, null,
                         "http://maps.google.com/maps?q=" + loc.getLatitude() + "," +
                                 loc.getLongitude(), null, null);
+                //---stop listening for location changes---
+//                lm.removeUpdates(locationListener);
             }
         }
 
