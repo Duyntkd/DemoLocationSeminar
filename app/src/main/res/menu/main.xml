@@ -31,6 +31,12 @@
         android:orderInCategory="100"
         android:title="Show current location"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_followcurrentlocation"
+        android:orderInCategory="100"
+        android:title="Follow current location"
+        app:showAsAction="never" />
+
 
 
 </menu>
