@@ -48,7 +48,7 @@ public class DataLocationActivity extends AppCompatActivity implements LocationL
     @Override
     protected void onResume() {
         super.onResume();
-        manager.requestLocationUpdates(provider, 400, 1, this);
+        manager.requestLocationUpdates(provider, 1000, 1, this);
     }
 
     @Override
@@ -70,11 +70,11 @@ public class DataLocationActivity extends AppCompatActivity implements LocationL
 
     @Override
     public void onProviderEnabled(String provider) {
-        Toast.makeText(this, "Disabled provider" + provider, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Enabled provider" + provider, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onProviderDisabled(String provider) {
-        Toast.makeText(this, "Enabled provider" + provider, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Disabled provider" + provider, Toast.LENGTH_SHORT).show();
     }
 }
