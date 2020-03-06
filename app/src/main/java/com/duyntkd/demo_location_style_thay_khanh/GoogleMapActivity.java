@@ -1,20 +1,11 @@
 package com.duyntkd.demo_location_style_thay_khanh;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.FragmentActivity;
-
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.graphics.Color;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -22,35 +13,24 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.gson.JsonObject;
-import com.google.maps.android.PolyUtil;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,6 +64,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         locationListener = new MyLocationListener();
+        locationManager=  (LocationManager) getSystemService(LOCATION_SERVICE);
 
 
     }
@@ -132,7 +113,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         //Show map
         map = googleMap;
         map.getUiSettings().setCompassEnabled(true);
-        int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        int status = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
         if (status != ConnectionResult.SUCCESS) {
             int requestCode = 10;
             Dialog dialog = GooglePlayServicesUtil.getErrorDialog(status, this, requestCode);
@@ -230,14 +211,17 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
     }
 
 
-    @SuppressLint("MissingPermission")
     @Override
     protected void onResume() {
         super.onResume();
-        if (status != 0) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        if (status == 0) {
+            try {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
 
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+            }catch (SecurityException e){
+                Log.println( Log.ERROR,"AAA","AAA");
+            }
         }
     }
 
