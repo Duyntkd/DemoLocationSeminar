@@ -129,6 +129,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
     @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        //Show map
         map = googleMap;
         map.getUiSettings().setCompassEnabled(true);
         int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
@@ -148,7 +149,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                     break;
                 }
             }
-
+            //Zoom map
             if (currentLocation != null) {
                 LatLng currentPos = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
 
@@ -159,6 +160,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
             map.getUiSettings().setZoomControlsEnabled(true);
             map.setMyLocationEnabled(true);
 
+            //put 2 flags on map
             listPoints = new ArrayList<>();
             map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
                 @Override
@@ -181,11 +183,8 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                     } else {
                         //Add second marker
                         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-
                     }
                     map.addMarker(markerOptions);
-
-
                 }
             });
         }
@@ -227,7 +226,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                 map.animateCamera(CameraUpdateFactory.newCameraPosition(myPosition));
                 break;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -283,25 +281,17 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                     strStatus = "temporarily unvailable";
                     break;
             }
-
             Toast.makeText(getBaseContext(), provider + " " + strStatus, Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void onProviderEnabled(String provider) {
             Toast.makeText(getBaseContext(), "Disabled provider " + provider, Toast.LENGTH_SHORT).show();
-
         }
 
         @Override
         public void onProviderDisabled(String provider) {
-
             Toast.makeText(getBaseContext(), "Enabled provider " + provider, Toast.LENGTH_SHORT).show();
-
         }
     }
-
-
-
-
 }

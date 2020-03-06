@@ -33,7 +33,8 @@ public class DataLocationActivity extends AppCompatActivity implements LocationL
         Criteria criteria = new Criteria();
         provider = manager.getBestProvider(criteria, false);
         Log.d("pro", provider);
-        @SuppressLint("MissingPermission") Location location = manager.getLastKnownLocation(provider);
+        @SuppressLint("MissingPermission")
+        Location location = manager.getLastKnownLocation(provider);
 
         if (location != null) {
             onLocationChanged(location);
@@ -64,7 +65,6 @@ public class DataLocationActivity extends AppCompatActivity implements LocationL
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
-
 
     }
 
