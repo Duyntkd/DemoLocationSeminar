@@ -1,8 +1,6 @@
 package com.duyntkd.demo_location_style_thay_khanh;
 
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
 import android.location.Criteria;
 import android.location.Location;
@@ -12,6 +10,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class DataLocationActivity extends AppCompatActivity implements LocationListener {
     private TextView txtLat;

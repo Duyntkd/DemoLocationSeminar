@@ -39,16 +39,12 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
     private Button btnStyle;
     private int state;
     private Location currentLocation;
-    //private LocationClient locationClient;
-    private static final LatLng BEN_THANH_MARKET = new LatLng(10.7731, 106.6983);
-    private static final LatLng SAIGON_OPERA_HOUSE = new LatLng(10.7767, 106.7032);
     private static final LatLng HOME = new LatLng(10.829108, 106.642812);
     private LocationManager locationManager;
     private LocationListener locationListener;
     private LatLng p;
     private int status;
     private ArrayList<LatLng> listPoints;
-    private boolean activateSearchInRadius = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,48 +60,9 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         locationListener = new MyLocationListener();
-        locationManager=  (LocationManager) getSystemService(LOCATION_SERVICE);
-
-
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
     }
 
-
-    public void clickToChangeStyle(View view) {
-        String title = "";
-
-        switch (state) {
-            case 0:
-                title = "SATELLITE - Change to Normal";
-                btnStyle.setText(title);
-                map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-                state = 1;
-                break;
-            case 1:
-                title = "HYBRID - Change to None";
-                btnStyle.setText(title);
-                map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-                state = 2;
-                break;
-            case 2:
-                title = "TERRAIN - Change to Satelite";
-                btnStyle.setText(title);
-                map.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-                state = 3;
-                break;
-            case 3:
-                title = "NONE - Change to SATELLITE";
-                btnStyle.setText(title);
-                map.setMapType(GoogleMap.MAP_TYPE_NONE);
-                state = 4;
-                break;
-            case 4:
-                title = "NORMAL - Change to TERRAIN";
-                btnStyle.setText(title);
-                map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                state = 0;
-                break;
-        }
-    }
 
     @SuppressLint("MissingPermission")
     @Override
@@ -146,7 +103,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
             map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
                 @Override
                 public void onMapLongClick(LatLng latLng) {
-                    //reset marker when alredy 2
+                    //reset marker when already 2
                     Toast.makeText(getBaseContext(), "Position: " + latLng.longitude, Toast.LENGTH_SHORT).show();
                     if (listPoints.size() == 2) {
                         listPoints.clear();
@@ -195,7 +152,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
             case R.id.menu_gotoLocation:
                 CameraPosition cameraPos = new CameraPosition.Builder().target(HOME).zoom(17).bearing(90).tilt(30).build();
                 map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPos));
-
                 map.addMarker(new MarkerOptions().position(HOME).title("Home").snippet("HCM City"));
 
                 break;
@@ -205,6 +161,12 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
                 CameraPosition myPosition = new CameraPosition.Builder().target(currentPos).zoom(17).bearing(90).tilt(30).build();
                 map.animateCamera(CameraUpdateFactory.newCameraPosition(myPosition));
+                map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
+                    @Override
+                    public void onCameraChange(CameraPosition cameraPosition) {
+                        map.animateCamera(CameraUpdateFactory.newLatLngZoom(p, 18));
+                    }
+                });
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -218,9 +180,9 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
             try {
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
 
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-            }catch (SecurityException e){
-                Log.println( Log.ERROR,"AAA","AAA");
+//                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+            } catch (SecurityException e) {
+                Log.println(Log.ERROR, "AAA", "AAA");
             }
         }
     }
@@ -239,14 +201,9 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         public void onLocationChanged(Location location) {
             if (location != null) {
                 Log.d("ddd", "ddd");
-                Toast.makeText(getBaseContext(), "Position" + location.getLatitude() + ":" + location.getLongitude(), Toast.LENGTH_SHORT).show();
+//               Toast.makeText(getBaseContext(), "Position" + location.getLatitude() + ":" + location.getLongitude(), Toast.LENGTH_SHORT).show();
                 p = new LatLng(location.getLatitude(), location.getLongitude());
-                map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
-                    @Override
-                    public void onCameraChange(CameraPosition cameraPosition) {
-                        map.animateCamera(CameraUpdateFactory.newLatLngZoom(p, 18));
-                    }
-                });
+//                locationManager.removeUpdates(locationListener);
             }
         }
 
@@ -276,6 +233,43 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         @Override
         public void onProviderDisabled(String provider) {
             Toast.makeText(getBaseContext(), "Enabled provider " + provider, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void clickToChangeStyle(View view) {
+        String title = "";
+
+        switch (state) {
+            case 0:
+                title = "SATELLITE - Change to HYBRID";
+                btnStyle.setText(title);
+                map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                state = 1;
+                break;
+            case 1:
+                title = "HYBRID - Change to TERRAIN";
+                btnStyle.setText(title);
+                map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+                state = 2;
+                break;
+            case 2:
+                title = "TERRAIN - Change to NONE";
+                btnStyle.setText(title);
+                map.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+                state = 3;
+                break;
+            case 3:
+                title = "NONE - Change to NORMAL";
+                btnStyle.setText(title);
+                map.setMapType(GoogleMap.MAP_TYPE_NONE);
+                state = 4;
+                break;
+            case 4:
+                title = "NORMAL - Change to SATELLITE";
+                btnStyle.setText(title);
+                map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                state = 0;
+                break;
         }
     }
 }

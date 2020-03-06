@@ -10,9 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
-import android.util.Log;
-
-import java.util.List;
 
 public class SmsReceiver extends BroadcastReceiver {
 
@@ -66,7 +63,7 @@ public class SmsReceiver extends BroadcastReceiver {
                 } catch (SecurityException e) {
 
                 }
-//---abort the broadcast; SMS messages won’t be broadcasted---
+                //---abort the broadcast; SMS messages won’t be broadcasted---
                 this.abortBroadcast();
             }
         }
