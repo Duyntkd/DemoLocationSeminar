@@ -128,10 +128,10 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         map.getUiSettings().setCompassEnabled(true);
-        int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        int status = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
         if (status != ConnectionResult.SUCCESS) {
             int requestCode = 10;
-            Dialog dialog = GooglePlayServicesUtil.getErrorDialog(status, this, requestCode);
+            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(this, status, requestCode);
             dialog.show();
         } else {
             map.setMyLocationEnabled(true);
@@ -482,14 +482,17 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         }
     }
 
-    @SuppressLint("MissingPermission")
     @Override
     protected void onResume() {
         super.onResume();
-        if (status != 0) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        if (status == 0) {
+            try {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
 
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+            } catch (SecurityException e) {
+                Log.println(Log.ERROR, "AAA", "AAA");
+            }
         }
     }
 
@@ -547,6 +550,8 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
             Toast.makeText(getBaseContext(), "Enabled provider " + provider, Toast.LENGTH_SHORT).show();
         }
     }
+
+
 
     private class MyOnMapClickListener implements GoogleMap.OnMapClickListener {
 
