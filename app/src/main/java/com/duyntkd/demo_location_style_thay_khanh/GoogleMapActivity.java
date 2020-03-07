@@ -247,39 +247,84 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         }
     }
 
-    public void clickToChangeStyle(View view) {
-        String title = "";
-        switch (state) {
-            case 0:
-                title = "SATELLITE - Change to HYBRID";
-                btnStyle.setText(title);
-                map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-                state = 1;
-                break;
-            case 1:
-                title = "HYBRID - Change to TERRAIN";
-                btnStyle.setText(title);
-                map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-                state = 2;
-                break;
-            case 2:
-                title = "TERRAIN - Change to NONE";
-                btnStyle.setText(title);
-                map.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-                state = 3;
-                break;
-            case 3:
-                title = "NONE - Change to NORMAL";
-                btnStyle.setText(title);
-                map.setMapType(GoogleMap.MAP_TYPE_NONE);
-                state = 4;
-                break;
-            case 4:
-                title = "NORMAL - Change to SATELLITE";
-                btnStyle.setText(title);
-                map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                state = 0;
-                break;
+    private class MyOnMapClickListener implements GoogleMap.OnMapClickListener {
+
+        @Override
+        public void onMapClick(LatLng latLng) {
+            Toast.makeText(getBaseContext(), "Position: " + latLng.longitude, Toast.LENGTH_SHORT).show();
+
         }
+    }
+
+    public void clickToFind(View view) {
+        EditText txtFind = (EditText) findViewById(R.id.edtLocation);
+        String strLocation = txtFind.getText().toString();
+        if (!activateSearchInRadius) {
+            if (strLocation != null && !strLocation.trim().equals("")) {
+                new GeocoderTask().execute(strLocation);
+            }
+        } else {
+            EditText edtRadius = (EditText) findViewById(R.id.edtRadius);
+            String radiusString = edtRadius.getText().toString();
+
+            String baseApiUrl = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?";
+            String query = "keyword=" + strLocation;
+            String key = "&key=" + getString(R.string.map_key);
+            String location = "&location=" + HOME.latitude + "," + HOME.longitude;
+            String radius = "&radius=" + radiusString;
+
+            String completeRequestUrl = baseApiUrl + query + location + radius + key;
+
+            TaskRequestLocation taskRequestLocation = new TaskRequestLocation();
+            taskRequestLocation.execute(completeRequestUrl);
+
+
+        }
+    }
+
+    private class GeocoderTask extends AsyncTask<String, Void, List<Address>> {
+
+        @Override
+        protected List<Address> doInBackground(String... locationName) {
+            Geocoder geo = new Geocoder(getBaseContext());
+            List<Address> address = null;
+            try {
+                address = geo.getFromLocationName(locationName[0], 3);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return address;
+        }
+
+        @Override
+        protected void onPostExecute(List<Address> result) {
+            super.onPostExecute(result);
+
+            if (result == null || result.size() == 0) {
+                Toast.makeText(getBaseContext(), "Not found", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            map.clear();
+            for (int i = 0; i < result.size(); i++) {
+                Address address = (Address) result.get(i);
+
+                LatLng findPos = new LatLng(address.getLatitude(), address.getLongitude());
+                String addressText = String.format("%s %s", address.getMaxAddressLineIndex() > 0 ? address.getAddressLine(0) : "", address.getCountryName());
+                MarkerOptions mo = new MarkerOptions();
+                mo.position(findPos);
+                mo.title(addressText);
+
+                map.addMarker(mo);
+
+
+                if (i == 0) {
+                    map.animateCamera(CameraUpdateFactory.newLatLng(findPos));
+                }
+
+            }
+        }
+
+
     }
 }
