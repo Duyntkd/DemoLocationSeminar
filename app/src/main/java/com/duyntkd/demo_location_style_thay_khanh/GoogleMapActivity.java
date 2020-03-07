@@ -81,7 +81,8 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         btnStyle = (Button) findViewById(R.id.btnStyle);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        locationListener = new MyLocationListener();
 
     }
 
@@ -148,12 +149,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
             if (currentLocation != null) {
                 LatLng currentPos = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
                 Log.d("aaa", "bbb");
-//                Marker currentMarker = map.addMarker(new MarkerOptions()
-//                        .position(currentPos)
-//                        .title("My position")
-//                        .snippet("Mobile Programming")
-//                        .icon(BitmapDescriptorFactory
-//                                .fromResource(R.drawable.ic_launcher_foreground)));
 
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPos, 15));
                 map.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
