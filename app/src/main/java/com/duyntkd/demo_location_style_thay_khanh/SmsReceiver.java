@@ -1,79 +1,97 @@
 package com.duyntkd.demo_location_style_thay_khanh;
 
-import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 
 public class SmsReceiver extends BroadcastReceiver {
-    private String senderTel;
-    private LocationManager manager;
-    private LocationListener listener;
+
+    LocationManager lm;
+    LocationListener locationListener;
+    String senderTel;
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        //---get the SMS message that was received---
+        Bundle myBundle = intent.getExtras();
+        SmsMessage[] messages = null;
+        String strMessage = "";
+
+        if (myBundle != null) {
+            Object[] pdus = (Object[]) myBundle.get("pdus");
+
+            messages = new SmsMessage[pdus.length];
+
+            for (int i = 0; i < messages.length; i++) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    String format = myBundle.getString("format");
+                    messages[i] = SmsMessage.createFromPdu((byte[]) pdus[i], format);
+                    if (i == 0) {
+                        senderTel = messages[i].getOriginatingAddress();
+                    }
+                } else {
+                    messages[i] = SmsMessage.createFromPdu((byte[]) pdus[i]);
+                    if (i == 0) {
+                        senderTel = messages[i].getOriginatingAddress();
+                    }
+                }
+                strMessage += messages[i].getMessageBody();
+                strMessage += "\n";
+            }
+            if (strMessage.startsWith("Where are you?")) {
+                //---use the LocationManager class to obtain locations data---
+                lm = (LocationManager)
+                        context.getSystemService(Context.LOCATION_SERVICE);
+
+                //---request location updates---
+                locationListener = new MyLocationListener();
+
+                try {
+                   lm.requestLocationUpdates(
+                            LocationManager.GPS_PROVIDER,
+                            10000,
+                            0,
+                            locationListener);
+                } catch (SecurityException e) {
+
+                }
+                //---abort the broadcast; SMS messages won’t be broadcasted---
+                this.abortBroadcast();
+            }
+        }
+    }
 
     private class MyLocationListener implements LocationListener {
 
-
         @Override
-        public void onLocationChanged(Location location) {
-            if (location != null) {
-                SmsManager smsManager = SmsManager.getDefault();
-                smsManager.sendTextMessage(senderTel, null, "http://maps.google.com/maps?q=" + location.getLatitude() + "," + location.getLongitude(), null, null);
-                manager.removeUpdates(listener);
+        public void onLocationChanged(Location loc) {
+            if (loc != null) {
+                //---send a SMS containing the current location---
+                SmsManager sms = SmsManager.getDefault();
+                sms.sendTextMessage(senderTel, null,
+                        "http://maps.google.com/maps?q=" + loc.getLatitude() + "," +
+                                loc.getLongitude(), null, null);
             }
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
         }
 
         @Override
         public void onProviderDisabled(String provider) {
-
-        }
-    }
-
-
-    @SuppressLint("MissingPermission")
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        Bundle bundle = intent.getExtras();
-        SmsMessage[] msgs = null;
-        String str = "";
-
-        if(bundle != null) {
-            senderTel = "";
-            Object[] pdus = ((Object[])bundle.get("pdus"));
-            msgs = new SmsMessage[pdus.length];
-            for (int i = 0; i < msgs.length; i++) {
-                msgs[i] = SmsMessage.createFromPdu((byte[])pdus[i]);
-                if(i == 0) {
-                    senderTel = msgs[i].getOriginatingAddress();
-                }
-                str += msgs[i].getMessageBody().toString();
-
-            }
-
-            if(str.startsWith("Where are you?")) {
-                manager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-                listener = new MyLocationListener();
-                manager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60000, 1000, listener);
-                this.abortBroadcast();
-            }
-
-
         }
 
+        @Override
+        public void onProviderEnabled(String provider) {
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status,
+                                    Bundle extras) {
+        }
     }
 }
