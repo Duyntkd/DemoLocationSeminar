@@ -1,10 +1,5 @@
 package com.duyntkd.demo_location_style_thay_khanh;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.FragmentActivity;
-
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.graphics.Color;
@@ -23,23 +18,24 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.gson.JsonObject;
 import com.google.maps.android.PolyUtil;
 
 import org.json.JSONArray;
@@ -69,6 +65,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
     private int status;
     private ArrayList<LatLng> listPoints;
     private boolean activateSearchInRadius = false;
+    private boolean track = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +76,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
         state = 0;
         status = 0;
+        track = false;
 
         btnStyle = (Button) findViewById(R.id.btnStyle);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -90,23 +88,38 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
     public void clickToChangeStyle(View view) {
         String title = "";
-
         switch (state) {
             case 0:
-                title = "Hybrid - Change to Normal";
+                title = "SATELLITE - Change to HYBRID";
                 btnStyle.setText(title);
-                map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+                map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
                 state = 1;
                 break;
-
             case 1:
-                title = "Normal - Change to Hybrid";
+                title = "HYBRID - Change to TERRAIN";
+                btnStyle.setText(title);
+                map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+                state = 2;
+                break;
+            case 2:
+                title = "TERRAIN - Change to NONE";
+                btnStyle.setText(title);
+                map.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+                state = 3;
+                break;
+            case 3:
+                title = "NONE - Change to NORMAL";
+                btnStyle.setText(title);
+                map.setMapType(GoogleMap.MAP_TYPE_NONE);
+                state = 4;
+                break;
+            case 4:
+                title = "NORMAL - Change to SATELLITE";
                 btnStyle.setText(title);
                 map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 state = 0;
                 break;
         }
-
     }
 
     @SuppressLint("MissingPermission")
@@ -205,16 +218,28 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
             case R.id.menu_gotoLocation:
                 CameraPosition cameraPos = new CameraPosition.Builder().target(HOME).zoom(17).bearing(90).tilt(30).build();
                 map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPos));
-
                 map.addMarker(new MarkerOptions().position(HOME).title("Home").snippet("HCM City"));
 
                 break;
             case R.id.menu_showcurrentlocation:
                 currentLocation = map.getMyLocation();
                 LatLng currentPos = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-
                 CameraPosition myPosition = new CameraPosition.Builder().target(currentPos).zoom(17).bearing(90).tilt(30).build();
                 map.animateCamera(CameraUpdateFactory.newCameraPosition(myPosition));
+                break;
+            case R.id.menu_followcurrentlocation:
+                if (track == false) {
+                    track = true;
+                    Toast.makeText(GoogleMapActivity.this, "Follow enabled", Toast.LENGTH_SHORT).show();
+
+                } else {
+                    track = false;
+                    Toast.makeText(GoogleMapActivity.this, "Follow disabled", Toast.LENGTH_SHORT).show();
+                }
+                currentLocation = map.getMyLocation();
+                LatLng currentLoc = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+                CameraPosition myLoc = new CameraPosition.Builder().target(currentLoc).zoom(17).bearing(90).tilt(30).build();
+                map.animateCamera(CameraUpdateFactory.newCameraPosition(myLoc));
                 break;
 
             case R.id.menu_connecttwopoints:
@@ -486,13 +511,14 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         @Override
         public void onLocationChanged(Location location) {
             if (location != null) {
-                Log.d("ddd", "ddd");
-                Toast.makeText(getBaseContext(), "Position" + location.getLatitude() + ":" + location.getLongitude(), Toast.LENGTH_SHORT).show();
                 p = new LatLng(location.getLatitude(), location.getLongitude());
+
                 map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
                     @Override
                     public void onCameraChange(CameraPosition cameraPosition) {
-                        map.animateCamera(CameraUpdateFactory.newLatLngZoom(p, 18));
+                        if (track) {
+                            map.animateCamera(CameraUpdateFactory.newLatLngZoom(p, 18));
+                        }
                     }
                 });
             }
@@ -513,21 +539,17 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
                     strStatus = "temporarily unvailable";
                     break;
             }
-
             Toast.makeText(getBaseContext(), provider + " " + strStatus, Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void onProviderEnabled(String provider) {
             Toast.makeText(getBaseContext(), "Disabled provider " + provider, Toast.LENGTH_SHORT).show();
-
         }
 
         @Override
         public void onProviderDisabled(String provider) {
-
             Toast.makeText(getBaseContext(), "Enabled provider " + provider, Toast.LENGTH_SHORT).show();
-
         }
     }
 
@@ -616,3 +638,5 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
     }
 }
+
+
