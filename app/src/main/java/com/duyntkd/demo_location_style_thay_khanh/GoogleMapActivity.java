@@ -480,7 +480,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
         }
     }
-    
+
     @Override
     protected void onResume() {
         super.onResume();
