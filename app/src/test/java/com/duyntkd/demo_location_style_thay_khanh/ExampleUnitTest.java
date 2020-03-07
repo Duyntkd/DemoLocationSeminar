@@ -2,7 +2,7 @@ package com.duyntkd.demo_location_style_thay_khanh;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * Example local unit test, which will execute on the development machine (host).

@@ -1,6 +1,8 @@
 package com.duyntkd.demo_location_style_thay_khanh;
 
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.annotation.SuppressLint;
 import android.location.Criteria;
 import android.location.Location;
@@ -10,8 +12,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 public class DataLocationActivity extends AppCompatActivity implements LocationListener {
     private TextView txtLat;
@@ -33,8 +33,7 @@ public class DataLocationActivity extends AppCompatActivity implements LocationL
         Criteria criteria = new Criteria();
         provider = manager.getBestProvider(criteria, false);
         Log.d("pro", provider);
-        @SuppressLint("MissingPermission")
-        Location location = manager.getLastKnownLocation(provider);
+        @SuppressLint("MissingPermission") Location location = manager.getLastKnownLocation(provider);
 
         if (location != null) {
             onLocationChanged(location);
@@ -48,7 +47,7 @@ public class DataLocationActivity extends AppCompatActivity implements LocationL
     @Override
     protected void onResume() {
         super.onResume();
-        manager.requestLocationUpdates(provider, 1000, 1, this);
+        manager.requestLocationUpdates(provider, 400, 1, this);
     }
 
     @Override
@@ -66,15 +65,16 @@ public class DataLocationActivity extends AppCompatActivity implements LocationL
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
 
+
     }
 
     @Override
     public void onProviderEnabled(String provider) {
-        Toast.makeText(this, "Enabled provider" + provider, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Disabled provider" + provider, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onProviderDisabled(String provider) {
-        Toast.makeText(this, "Disabled provider" + provider, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Enabled provider" + provider, Toast.LENGTH_SHORT).show();
     }
 }
